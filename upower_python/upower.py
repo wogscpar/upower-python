@@ -3,8 +3,6 @@ import dbus
 class UPowerManager():
 
     def __init__(self):
-        checker = False
-
         self.UPOWER_NAME = "org.freedesktop.UPower"
         self.UPOWER_PATH = "/org/freedesktop/UPower"
 
@@ -17,6 +15,20 @@ class UPowerManager():
 
         devices = upower_interface.EnumerateDevices()
         return devices
+
+    def get_display_device(self):
+        upower_proxy = self.bus.get_object(self.UPOWER_NAME, self.UPOWER_PATH) 
+        upower_interface = dbus.Interface(upower_proxy, self.UPOWER_NAME)
+
+        dispdev = upower_interface.GetDisplayDevice()
+        return dispdev
+
+    def get_critical_action(self):
+        upower_proxy = self.bus.get_object(self.UPOWER_NAME, self.UPOWER_PATH) 
+        upower_interface = dbus.Interface(upower_proxy, self.UPOWER_NAME)
+        
+        critical_action = upower_interface.GetCriticalAction()
+        return critical_action
 
     def get_device_percentage(self, battery):
         battery_proxy = self.bus.get_object(self.UPOWER_NAME, battery)
@@ -91,3 +103,44 @@ class UPowerManager():
 
         return information_table
 
+    def is_lid_present(self):
+        upower_proxy = self.bus.get_object(self.UPOWER_NAME, self.UPOWER_PATH) 
+        upower_interface = dbus.Interface(upower_proxy, self.DBUS_PROPERTIES)
+
+        is_lid_present = bool(upower_interface.Get(self.UPOWER_NAME, 'LidIsPresent'))
+        return is_lid_present
+
+    def is_lid_closed(self):
+        upower_proxy = self.bus.get_object(self.UPOWER_NAME, self.UPOWER_PATH) 
+        upower_interface = dbus.Interface(upower_proxy, self.DBUS_PROPERTIES)
+
+        is_lid_closed = bool(upower_interface.Get(self.UPOWER_NAME, 'LidIsClosed'))
+        return is_lid_closed
+
+    def on_battery(self):
+        upower_proxy = self.bus.get_object(self.UPOWER_NAME, self.UPOWER_PATH) 
+        upower_interface = dbus.Interface(upower_proxy, self.DBUS_PROPERTIES)
+
+        on_battery = bool(upower_interface.Get(self.UPOWER_NAME, 'OnBattery'))
+        return on_battery
+
+    def has_wakeup_capabilities(self):
+        upower_proxy = self.bus.get_object(self.UPOWER_NAME, self.UPOWER_PATH + "/Wakeups") 
+        upower_interface = dbus.Interface(upower_proxy, self.DBUS_PROPERTIES)
+
+        has_wakeup_capabilities = bool(upower_interface.Get(self.UPOWER_NAME+ '.Wakeups', 'HasCapability'))
+        return has_wakeup_capabilities
+
+    def get_wakeups_data(self):
+        upower_proxy = self.bus.get_object(self.UPOWER_NAME, self.UPOWER_PATH + "/Wakeups") 
+        upower_interface = dbus.Interface(upower_proxy, self.UPOWER_NAME + '.Wakeups')
+
+        data = upower_interface.GetData()
+        return data
+    
+    def get_wakeups_total(self):
+        upower_proxy = self.bus.get_object(self.UPOWER_NAME, self.UPOWER_PATH + "/Wakeups") 
+        upower_interface = dbus.Interface(upower_proxy, self.UPOWER_NAME + '.Wakeups')
+
+        data = upower_interface.GetTotal()
+        return data
