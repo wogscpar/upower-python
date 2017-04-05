@@ -144,3 +144,35 @@ class UPowerManager():
 
         data = upower_interface.GetTotal()
         return data
+
+    def is_loading(self, battery):
+        battery_proxy = self.bus.get_object(self.UPOWER_NAME, battery)
+        battery_proxy_interface = dbus.Interface(battery_proxy, self.DBUS_PROPERTIES)
+        
+        state = int(battery_proxy_interface.Get(self.UPOWER_NAME + ".Device", "State"))
+
+        if (state == 1):
+            return True
+        else:
+            return False
+
+    def get_state(self, battery):
+        battery_proxy = self.bus.get_object(self.UPOWER_NAME, battery)
+        battery_proxy_interface = dbus.Interface(battery_proxy, self.DBUS_PROPERTIES)
+        
+        state = int(battery_proxy_interface.Get(self.UPOWER_NAME + ".Device", "State"))
+
+        if (state == 0):
+            return "Unknown"
+        elif (state == 1):
+            return "Loading"
+        elif (state == 2):
+            return "Discharging"
+        elif (state == 3):
+            return "Empty"
+        elif (state == 4):
+            return "Fully charged"
+        elif (state == 5):
+            return "Pending charge"
+        elif (state == 6):
+            return "Pending discharge"
