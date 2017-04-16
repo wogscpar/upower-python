@@ -14,3 +14,5 @@ Functions:
 9. has_wakeup_capabilities
 10. get_wakeups_data
 11. get_wakeups_total
+12. is_loading
+13. get_state
